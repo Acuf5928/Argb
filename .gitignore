@@ -1,0 +1,4 @@
+*.pyc
+debug_file.txt
+__pycache__
+.vscode
