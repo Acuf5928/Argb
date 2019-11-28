@@ -121,6 +121,9 @@ class data:
 
     def black_icon(self):
         return self.data["icon_black_theme"]
+    
+    def database_update_cycle_wait_time(self):
+        return self.data["database_update_cycle_wait_time"]
 
     def set_language(self, new):
         self.data["language"] = new
