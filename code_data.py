@@ -98,16 +98,6 @@ class data:
         except Exception as ex:
             self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "db_error") + str(ex), 1)
 
-    def DownloadFolderPath(self):
-        '''restituisce il path della cartella download'''
-        return self.folderPath_value
-    
-    def order(self):
-        return self.stop_order
-
-    def formati(self):
-        return self.data["formati"]
-
     def icon_color(self):
         return self.data["icon_color"]
 
@@ -116,27 +106,6 @@ class data:
 
     def sep(self):
         return self.sep_value
-    
-    def clean_folder_path(self):
-        return self.data["clean_folder_path"]
-
-    def clean_time_difference(self):
-        return self.data["clean_time_difference"]
-
-    def clean_wait_time(self):
-        return self.data["clean_wait_time"]
-
-    def open_file_copied(self):
-        return self.data["open_file_copied"]
-
-    def create_folder(self):
-        return self.data["create_folder"]
-
-    def order_cycle_wait_time(self):
-        return self.data["order_cycle_wait_time"]
-
-    def database_update_cycle_wait_time(self):
-        return self.data["database_update_cycle_wait_time"]
     
     def debug_clean_time(self):
         return self.data["debug_clean_time"]
@@ -165,41 +134,9 @@ class data:
         self.data["debug_clean_element"] = new
         self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + " debug_clean_element: " + str(new))
     
-    def set_DownloadFolderPath(self, new):
-        self.data["DownloadFolderPath"] = new    
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "DownloadFloderPath: " + str(new))
-    
-    def set_formati(self, new):
-        self.data["formati"] = new
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "formati: " + str(new))
-    
     def set_sep(self, new):
         self.data["sep"] = new
         self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "sep: " + str(new))
-    
-    def set_clean_folder_path(self, new):
-        self.data["clean_folder_path"] = new
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "clean_folder_path: " + str(new))
-    
-    def set_clean_time_difference(self, new):
-        self.data["clean_time_difference"] = new
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "clean_time:difference: " + str(new))
-    
-    def set_clean_wait_time(self, new):
-        self.data["clean_wait_time"] = new
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "clean_wait_time: " + str(new))
-    
-    def set_open_file_copied(self, new):
-        self.data["open_file_copied"] = new
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "open_file_copied: " + str(new))
-    
-    def set_create_folder(self, new):
-        self.data["create_folder"] = new
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "create_folder: " + str(new))
-    
-    def set_order_cycle_wait_time(self, new):
-        self.data["order_cycle_wait_time"] = new
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "order_wait_time: " + str(new))
     
     def set_database_update_cycle_wait_time(self, new):
         self.data["database_update_cycle_wait_time"] = new
@@ -209,14 +146,6 @@ class data:
         self.data["gui"] = new
         self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "gui: " + str(new))
     
-    def set_cont(self, new):
-        self.cont = new
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "cont: " + str(new))
-    
-    def set_order(self, new):
-        self.stop_order = new
-        self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "order: " + str(new))
-
     def set_icon_color(self, new):
         self.data["icon_color"] = new
         self.debug_add(str(time.asctime( time.localtime(time.time()) )) + ": " + self.language_class.r_string(self.s_language(), "set_value") + "icon_color: " + str(new))
