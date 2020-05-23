@@ -17,11 +17,6 @@ class MySerial:
         except Exception:
             pass
 
-    def read(self):
-        self.checkSerial()
-        time.sleep(.2)
-        return self.s.readline().decode()
-
     def checkSerial(self):
         if self.s is None:
             try:

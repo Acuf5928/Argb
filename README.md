@@ -10,4 +10,5 @@ I created this script to control a set of ARGB LED via an arduino that accepts c
 
 ## TO-DO
 
-Pc program (in python)
+CHANGE COLOR BASED ON CPU TEMP
+REMEBER LAST SELECTION
