@@ -1,4 +1,3 @@
-import _thread
 import json
 import os
 import time
@@ -13,9 +12,12 @@ class AppContext(ApplicationContext):
         super().__init__()
         self.serialOBJ = None
         self.port = None
+        self.effect = None
 
         self.readKey()
         self.serial()
+        time.sleep(2)
+        self.serial().write(self.effect)
 
     def run(self):
         return self.app.exec_()
@@ -41,17 +43,23 @@ class AppContext(ApplicationContext):
         self.serial()
         self.saveKey()
 
+    def setEffect(self, effect):
+        self.effect = effect
+        self.saveKey()
+
     def readKey(self):
         try:
             with open(self.keyPath() + "/settings.json", "r") as read_file:
                 data = json.load(read_file)
                 self.port = data["port"]
+                self.effect = data["effect"]
 
         except Exception:
             self.port = ""
+            self.effect = ""
 
     def saveKey(self):
-        data = {"port": self.port}
+        data = {"port": self.port, "effect": self.effect}
         self.checkfolder(self.keyPath())
 
         with open(self.keyPath() + "/settings.json", "w") as write_file:

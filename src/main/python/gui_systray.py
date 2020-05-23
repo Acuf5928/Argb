@@ -59,11 +59,6 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
         self.menu.addSeparator()
 
-        self.off = self.menu.addAction("OFF")
-        self.off.triggered.connect(self.setOFF)
-
-        self.menu.addSeparator()
-
         self.rainbow1 = self.menu.addAction("RAINBOW")
         self.rainbow1.triggered.connect(self.setRAINBOW)
 
@@ -72,6 +67,11 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
         self.theaterChaseRainbow = self.menu.addAction("THEATERCHASERAINBOW")
         self.theaterChaseRainbow.triggered.connect(self.setTHEATERCHASERAINBOW)
+
+        self.menu.addSeparator()
+
+        self.off = self.menu.addAction("OFF")
+        self.off.triggered.connect(self.setOFF)
 
         self.menu.addSeparator()
 
@@ -85,39 +85,51 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
     # Set functions of all menu elements, from here:
     def setRED1(self):
+        self.ctx.setEffect(1)
         self.ctx.serial().write(1)
 
     def setBLUE1(self):
+        self.ctx.setEffect(3)
         self.ctx.serial().write(3)
 
     def setGREEN1(self):
+        self.ctx.setEffect(2)
         self.ctx.serial().write(2)
 
     def setWHITE1(self):
+        self.ctx.setEffect(5)
         self.ctx.serial().write(5)
 
     def setRED2(self):
+        self.ctx.setEffect(6)
         self.ctx.serial().write(6)
 
     def setBLUE2(self):
+        self.ctx.setEffect(8)
         self.ctx.serial().write(8)
 
     def setGREEN2(self):
+        self.ctx.setEffect(7)
         self.ctx.serial().write(7)
 
     def setWHITE2(self):
+        self.ctx.setEffect(9)
         self.ctx.serial().write(9)
 
     def setOFF(self):
+        self.ctx.setEffect(4)
         self.ctx.serial().write(4)
 
     def setRAINBOW(self):
+        self.ctx.setEffect(10)
         self.ctx.serial().write(10)
 
     def setRAINBOW2(self):
+        self.ctx.setEffect(11)
         self.ctx.serial().write(11)
 
     def setTHEATERCHASERAINBOW(self):
+        self.ctx.setEffect(12)
         self.ctx.serial().write(12)
 
     def openWindows(self):

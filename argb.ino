@@ -30,7 +30,7 @@ String inputString = "";       // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
 #define BUTTON_PIN 4
-boolean status_led = true;
+boolean status_led = false;
 
 void setup() {
   Mod = 10;

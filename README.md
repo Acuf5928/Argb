@@ -7,5 +7,4 @@ I created this script to control a set of ARGB LED via an arduino that accepts c
 
 ## TO-DO
 
-CHANGE COLOR BASED ON CPU TEMP\
-REMEBER LAST SELECTION
+CHANGE COLOR BASED ON CPU TEMP
