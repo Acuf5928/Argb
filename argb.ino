@@ -4,7 +4,7 @@
 #define PIXEL_COUNT 18
 
 #define TEMP_MIN 0
-#define TEMP_MAX 100
+#define TEMP_MAX 90
 
 // Parameter 1 = number of pixels in strip,  neopixel stick has 8
 // Parameter 2 = pin number (most are valid)
@@ -182,18 +182,11 @@ void theaterChase(uint32_t c) {
       theaterChase_i = 0;
     }
     
-    if(theaterChase_i2 < strip.numPixels()){
-    strip.setPixelColor(theaterChase_i2, strip.Color(0, 0, 0));
-    theaterChase_i2++;
-
-    if(theaterChase_i2 == strip.numPixels()){
-      theaterChase_i2 = 0;
-    }
-    
     strip.setPixelColor(theaterChase_i, c);
+    strip.setPixelColor(theaterChase_i + 1, c);
+    strip.setPixelColor(theaterChase_i + 2, c);
     strip.show();
-    delay(25);
-    }
+    delay(40);
   }    
 }
 
