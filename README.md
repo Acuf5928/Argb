@@ -5,6 +5,8 @@ I created this script to control a set of ARGB LED via an arduino that accepts c
 
 <img src="rgb-fan-headers.jpg" width="300" alt="300">
 
+<img src="scheme.png" width="300" alt="300">
+
 ## TO-DO
 
 CHANGE COLOR BASED ON CPU TEMP
