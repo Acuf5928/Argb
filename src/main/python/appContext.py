@@ -5,7 +5,7 @@ import time
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
-from code_helper import MySerial
+from code_mySerial import MySerial
 
 
 class AppContext(ApplicationContext):
