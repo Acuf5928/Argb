@@ -1,9 +1,14 @@
+import _thread
+import time
+
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
 
 import sys
 
 import gui_settings
+
+from code_readCpuInfo import cpuInfo
 
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
@@ -70,6 +75,11 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
         self.menu.addSeparator()
 
+        self.cpu = self.menu.addAction("Based on CPU Load")
+        self.cpu.triggered.connect(self.setCPU)
+
+        self.menu.addSeparator()
+
         self.off = self.menu.addAction("OFF")
         self.off.triggered.connect(self.setOFF)
 
@@ -131,6 +141,17 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def setTHEATERCHASERAINBOW(self):
         self.ctx.setEffect(12)
         self.ctx.serial().write(12)
+
+    def setCPU(self):
+        self.ctx.setEffect(13)
+        _thread.start_new_thread(self.readCPUInfo, ())
+
+    def readCPUInfo(self):
+        reader = cpuInfo()
+        while True:
+            self.ctx.serial().write(int(reader.fetch_data()[0]["Reading"]) + 1300)
+            time.sleep(2)
+            if self.ctx.effect is not 13: break
 
     def openWindows(self):
         self.window = gui_settings.App(self.ctx)

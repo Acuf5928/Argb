@@ -3,8 +3,8 @@
 #define PIXEL_PIN    6    // Digital IO pin connected to the NeoPixels.
 #define PIXEL_COUNT 18
 
-#define TEMP_MIN 45
-#define TEMP_MAX 80
+#define TEMP_MIN 0
+#define TEMP_MAX 100
 
 // Parameter 1 = number of pixels in strip,  neopixel stick has 8
 // Parameter 2 = pin number (most are valid)
