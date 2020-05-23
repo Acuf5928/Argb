@@ -1,5 +1,4 @@
 import _thread
-import time
 
 import PyQt5.QtGui as QtGui
 import PyQt5.QtWidgets as QtWidgets
@@ -8,7 +7,7 @@ import sys
 
 import gui_settings
 
-from code_readCpuInfo import cpuInfo
+from appContext import readCPUInfo
 
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
@@ -144,14 +143,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
     def setCPU(self):
         self.ctx.setEffect(13)
-        _thread.start_new_thread(self.readCPUInfo, ())
-
-    def readCPUInfo(self):
-        reader = cpuInfo()
-        while True:
-            self.ctx.serial().write(int(reader.fetch_data()[0]["Reading"]) + 1300)
-            time.sleep(2)
-            if self.ctx.effect is not 13: break
+        _thread.start_new_thread(readCPUInfo, (self.ctx, ))
 
     def openWindows(self):
         self.window = gui_settings.App(self.ctx)

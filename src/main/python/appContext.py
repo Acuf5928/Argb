@@ -7,6 +7,8 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 from code_mySerial import MySerial
 
+from code_readCpuInfo import cpuInfo
+
 
 class AppContext(ApplicationContext):
     def __init__(self):
@@ -21,7 +23,12 @@ class AppContext(ApplicationContext):
 
     def initLed(self):
         time.sleep(3)
-        self.serial().write(self.effect)
+        if self.effect is not 13:
+            self.serial().write(self.effect)
+        else:
+            pass
+            #_thread.start_new_thread(readCPUInfo, (self, ))
+            #not work
 
     def run(self):
         return self.app.exec_()
@@ -72,3 +79,11 @@ class AppContext(ApplicationContext):
     def checkfolder(self, path):
         if not os.path.isdir(path):
             os.mkdir(path)
+
+
+def readCPUInfo(ctx):
+    reader = cpuInfo()
+    while True:
+        ctx.serial().write(int(reader.fetch_data()[0]["Reading"]) + 1300)
+        time.sleep(2)
+        if ctx.effect is not 13: break
