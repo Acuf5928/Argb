@@ -1,3 +1,4 @@
+import _thread
 import json
 import os
 import time
@@ -16,7 +17,10 @@ class AppContext(ApplicationContext):
 
         self.readKey()
         self.serial()
-        time.sleep(2)
+        _thread.start_new_thread(self.initLed, ())
+
+    def initLed(self):
+        time.sleep(3)
         self.serial().write(self.effect)
 
     def run(self):
