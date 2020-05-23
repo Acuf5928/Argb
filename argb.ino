@@ -29,6 +29,9 @@ int min_temp_act, max_temp_act;
 String inputString = "";       // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
+#define BUTTON_PIN 4
+boolean status_led = true;
+
 void setup() {
   Mod = 10;
   min_temp_act = cpu_temp_fun_num + TEMP_MIN;
@@ -44,6 +47,14 @@ void setup() {
 
 void loop()
 {  
+  if (digitalRead(BUTTON_PIN) == HIGH) {
+      status_led =! status_led;
+
+    while (digitalRead(BUTTON_PIN) == HIGH) { 
+      delay(200);  
+    }
+  }
+  
   if (stringComplete) {
     int temp = inputString.toInt();
    
@@ -55,7 +66,10 @@ void loop()
           Mod = 13;
         } else if(temp > max_temp_act){
           Mod = 6;
+        } else if (temp == 4) {
+          status_led = false;
         } else{
+          status_led = true;
           Mod = temp;  
           rainbowCycle_j = 0;
           rainbowCycle_j2 = 0;
@@ -73,33 +87,35 @@ void loop()
 }
 
 void startShow() {
-  switch (Mod) {
-    case 1: colorWipe(strip.Color(255, 0, 0));  // Red
-      break;
-    case 2: colorWipe(strip.Color(0, 255, 0));  // Green
-      break;
-    case 3: colorWipe(strip.Color(0, 0, 255));  // Blue
-      break;
-    case 4: colorWipe(strip.Color(0, 0, 0));    // Black/off
-      break;
-    case 5: colorWipe(strip.Color(255, 255, 255));    // White
-      break;
-    case 6: theaterChase(strip.Color(255, 0, 0));  // Red
-      break;
-    case 7: theaterChase(strip.Color(0, 255, 0));  // Green
-      break;
-    case 8: theaterChase(strip.Color(0, 0, 255));  // Blue
-      break;
-    case 9: theaterChase(strip.Color(255, 255, 255));    // White
-      break;
-    case 10: rainbowCycle();
-      break;
-    case 11: rainbowCycle_2();
-      break;
-    case 12: theaterChaseRainbow();
-      break;
-    case 13: cpu_temp_fun();
-      break;
+  if (status_led == false) {
+       colorWipe(strip.Color(0, 0, 0)); 
+  } else {
+    switch (Mod) {
+      case 1: colorWipe(strip.Color(255, 0, 0));  // Red
+        break;
+      case 2: colorWipe(strip.Color(0, 255, 0));  // Green
+        break;
+      case 3: colorWipe(strip.Color(0, 0, 255));  // Blue
+        break;
+      case 5: colorWipe(strip.Color(255, 255, 255));    // White
+        break;
+      case 6: theaterChase(strip.Color(255, 0, 0));  // Red
+        break;
+      case 7: theaterChase(strip.Color(0, 255, 0));  // Green
+        break;
+      case 8: theaterChase(strip.Color(0, 0, 255));  // Blue
+        break;
+      case 9: theaterChase(strip.Color(255, 255, 255));    // White
+        break;
+      case 10: rainbowCycle();
+        break;
+      case 11: rainbowCycle_2();
+        break;
+      case 12: theaterChaseRainbow();
+        break;
+      case 13: cpu_temp_fun();
+        break;
+    } 
   }
 }
 
