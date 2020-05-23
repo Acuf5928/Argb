@@ -1,8 +1,10 @@
 #include <Adafruit_NeoPixel.h>
 
 #define PIXEL_PIN    6    // Digital IO pin connected to the NeoPixels.
+#define PIXEL_COUNT 18
 
-#define PIXEL_COUNT 8
+#define TEMP_MIN 45
+#define TEMP_MAX 80
 
 // Parameter 1 = number of pixels in strip,  neopixel stick has 8
 // Parameter 2 = pin number (most are valid)
@@ -14,36 +16,46 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 byte Mod;
+
 uint16_t rainbowCycle_j, rainbowCycle_j2;
-int theaterChase_i;
+int theaterChase_i, theaterChase_i2;
 int colorWipe_i;
 int theaterChaseRainbow_j;
+
 int cpu_temp;
+int cpu_temp_fun_num = 1300;
+int min_temp_act, max_temp_act;
+
+String inputString = "";       // a String to hold incoming data
+bool stringComplete = false;  // whether the string is complete
 
 void setup() {
-  Mod = 1;
-  Serial.begin(9600);
+  Mod = 10;
+  min_temp_act = cpu_temp_fun_num + TEMP_MIN;
+  max_temp_act = cpu_temp_fun_num + TEMP_MAX;
+  
+  //Serial
+  Serial.begin(115200);
+  inputString.reserve(200);
+  
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 }
 
 void loop()
 {  
-  if (Serial.available()) {
-      int temp = Serial.parseInt();
+  if (stringComplete) {
+    int temp = inputString.toInt();
+   
       if(temp != 0){
-        if(temp >= 1300 and temp < 1330){
+        if(temp >= cpu_temp_fun_num and temp < min_temp_act){
           Mod = 8;
-        }
-        else if(temp >= 1330 and temp <= 1370){
+        } else if(temp >= min_temp_act and temp <= max_temp_act){
           cpu_temp = temp - 1300;
           Mod = 13;
-        }
-        else if(temp > 1370){
+        } else if(temp > max_temp_act){
           Mod = 6;
-        }
-        
-        else{
+        } else{
           Mod = temp;  
           rainbowCycle_j = 0;
           rainbowCycle_j2 = 0;
@@ -52,8 +64,12 @@ void loop()
           theaterChaseRainbow_j = 0;
         }
       }
-    }
-    startShow();
+    
+    // clear the string:
+    inputString = "";
+    stringComplete = false;
+  }
+  startShow();
 }
 
 void startShow() {
@@ -89,9 +105,8 @@ void startShow() {
 
 void cpu_temp_fun(){
   byte r, g, b;
-  byte min_temp = 30, max_temp = 70;
 
-  r = (cpu_temp - min_temp) * 255 / (max_temp - min_temp);
+  r = (cpu_temp - TEMP_MIN) * 255 / (TEMP_MAX - TEMP_MIN);
   b = 255 - r;
   
   colorWipe(strip.Color(r, g, b));
@@ -151,9 +166,18 @@ void theaterChase(uint32_t c) {
       theaterChase_i = 0;
     }
     
+    if(theaterChase_i2 < strip.numPixels()){
+    strip.setPixelColor(theaterChase_i2, strip.Color(0, 0, 0));
+    theaterChase_i2++;
+
+    if(theaterChase_i2 == strip.numPixels()){
+      theaterChase_i2 = 0;
+    }
+    
     strip.setPixelColor(theaterChase_i, c);
     strip.show();
-    delay(50);
+    delay(25);
+    }
   }    
 }
 
@@ -162,9 +186,6 @@ void theaterChaseRainbow() {
   if(theaterChaseRainbow_j < 256) {
     theaterChase(Wheel(theaterChaseRainbow_j));
     theaterChaseRainbow_j++;
-
-    strip.show();
-    delay(10);
   }
  else{
   theaterChaseRainbow_j = 0;
@@ -184,4 +205,20 @@ uint32_t Wheel(byte WheelPos) {
   }
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+
+void serialEvent() {
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag so the main loop can
+    // do something about it:
+
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
 }
