@@ -4,7 +4,9 @@
 #define PIXEL_COUNT 18
 
 #define TEMP_MIN 0
-#define TEMP_MAX 90
+#define TEMP_MAX 95
+
+#define BUTTON_PIN 4
 
 // Parameter 1 = number of pixels in strip,  neopixel stick has 8
 // Parameter 2 = pin number (most are valid)
@@ -29,7 +31,6 @@ int min_temp_act, max_temp_act;
 String inputString = "";       // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
-#define BUTTON_PIN 4
 boolean status_led = false;
 
 void setup() {
@@ -123,9 +124,9 @@ void startShow() {
 void cpu_temp_fun(){
   byte r, g, b;
 
-  r = (cpu_temp - TEMP_MIN) * 255 / (TEMP_MAX - TEMP_MIN);
-  b = 255 - r;
-  
+  r = 255;
+  g = b = 255 - map(cpu_temp, TEMP_MIN, TEMP_MAX, 0, 255);
+
   colorWipe(strip.Color(r, g, b));
 }
 
@@ -135,7 +136,7 @@ void colorWipe(uint32_t c) {
     strip.setPixelColor(colorWipe_i, c);
     colorWipe_i++;
     strip.show();
-    delay(50);
+    delay(25);
   }    
   else{
     colorWipe_i = 0;
@@ -167,10 +168,9 @@ void rainbowCycle_2() {
 
     strip.show();
     delay(10);
+  } else{
+    rainbowCycle_j2 = 0;
   }
- else{
-  rainbowCycle_j2 = 0;
- }
 }
 
 //Theatre-style crawling lights.
