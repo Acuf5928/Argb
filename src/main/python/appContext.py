@@ -26,9 +26,7 @@ class AppContext(ApplicationContext):
         if self.effect is not 13:
             self.serial().write(self.effect)
         else:
-            pass
-            #_thread.start_new_thread(readCPUInfo, (self, ))
-            #not work
+            _thread.start_new_thread(readCPUInfo, (self, ))
 
     def run(self):
         return self.app.exec_()

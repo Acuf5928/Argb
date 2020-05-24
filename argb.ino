@@ -18,7 +18,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NE
 byte Mod;
 
 uint16_t rainbowCycle_j, rainbowCycle_j2;
-int theaterChase_i, theaterChase_i2;
+int theaterChase_i;
 int colorWipe_i;
 int theaterChaseRainbow_j;
 
@@ -57,18 +57,20 @@ void loop()
   
   if (stringComplete) {
     int temp = inputString.toInt();
-   
-      if(temp != 0){
-        if(temp >= cpu_temp_fun_num and temp < min_temp_act){
+    
+    if (temp == 4) {
+          status_led = false;
+    } else if(temp >= cpu_temp_fun_num and temp < min_temp_act){
+          status_led = true;
           Mod = 8;
-        } else if(temp >= min_temp_act and temp <= max_temp_act){
+    } else if(temp >= min_temp_act and temp <= max_temp_act){
+          status_led = true;
           cpu_temp = temp - 1300;
           Mod = 13;
-        } else if(temp > max_temp_act){
+    } else if(temp > max_temp_act){
+          status_led = true;
           Mod = 6;
-        } else if (temp == 4) {
-          status_led = false;
-        } else{
+    } else {
           status_led = true;
           Mod = temp;  
           rainbowCycle_j = 0;
@@ -76,8 +78,7 @@ void loop()
           theaterChase_i = 0;
           colorWipe_i = 0;
           theaterChaseRainbow_j = 0;
-        }
-      }
+    }
     
     // clear the string:
     inputString = "";
