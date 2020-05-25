@@ -21,7 +21,6 @@ byte Mod;
 
 uint16_t rainbowCycle_j, rainbowCycle_j2;
 int theaterChase_i;
-int colorWipe_i;
 int theaterChaseRainbow_j;
 
 int cpu_temp;
@@ -33,6 +32,8 @@ bool stringComplete = false;  // whether the string is complete
 
 boolean status_led = false;
 
+int actualColor[PIXEL_COUNT][3];
+
 void setup() {
   Mod = 10;
   min_temp_act = cpu_temp_fun_num + TEMP_MIN;
@@ -41,6 +42,12 @@ void setup() {
   //Serial
   Serial.begin(115200);
   inputString.reserve(200);
+
+  for(int i=0; i<PIXEL_COUNT; i++){
+    for(int i2=0; i2<3; i2++){
+      actualColor[i][i2];
+    }
+  }
   
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
@@ -74,11 +81,6 @@ void loop()
     } else {
           status_led = true;
           Mod = temp;  
-          rainbowCycle_j = 0;
-          rainbowCycle_j2 = 0;
-          theaterChase_i = 0;
-          colorWipe_i = 0;
-          theaterChaseRainbow_j = 0;
     }
     
     // clear the string:
@@ -90,30 +92,35 @@ void loop()
 
 void startShow() {
   if (status_led == false) {
-       colorWipe(strip.Color(0, 0, 0)); 
+       colorWipe(0, 0, 0); 
   } else {
     switch (Mod) {
-      case 1: colorWipe(strip.Color(255, 0, 0));  // Red
+      case 1: colorWipe(255, 0, 0);  // Red
         break;
-      case 2: colorWipe(strip.Color(0, 255, 0));  // Green
+      case 2: colorWipe(0, 255, 0);  // Green
         break;
-      case 3: colorWipe(strip.Color(0, 0, 255));  // Blue
+      case 3: colorWipe(0, 0, 255);  // Blue
         break;
-      case 5: colorWipe(strip.Color(255, 255, 255));    // White
+      case 5: colorWipe(255, 255, 255);    // White
         break;
-      case 6: theaterChase(strip.Color(255, 0, 0));  // Red
+      case 6: resetMemorizedColor();
+        theaterChase(strip.Color(255, 0, 0));  // Red
         break;
-      case 7: theaterChase(strip.Color(0, 255, 0));  // Green
+      case 7: resetMemorizedColor();
+        theaterChase(strip.Color(0, 255, 0));  // Green
         break;
-      case 8: theaterChase(strip.Color(0, 0, 255));  // Blue
+      case 8: resetMemorizedColor();
+        theaterChase(strip.Color(0, 0, 255));  // Blue
         break;
-      case 9: theaterChase(strip.Color(255, 255, 255));    // White
+      case 9: resetMemorizedColor();
+        theaterChase(strip.Color(255, 255, 255));    // White
         break;
       case 10: rainbowCycle();
         break;
       case 11: rainbowCycle_2();
         break;
-      case 12: theaterChaseRainbow();
+      case 12: resetMemorizedColor();
+        theaterChaseRainbow();
         break;
       case 13: cpu_temp_fun();
         break;
@@ -127,19 +134,28 @@ void cpu_temp_fun(){
   r = 255;
   g = b = 255 - map(cpu_temp, TEMP_MIN, TEMP_MAX, 0, 255);
 
-  colorWipe(strip.Color(r, g, b));
+  colorWipe(r, g, b);
 }
 
 // Fill the dots one after the other with a color
-void colorWipe(uint32_t c) {
-  if(colorWipe_i < strip.numPixels()){
-    strip.setPixelColor(colorWipe_i, c);
-    colorWipe_i++;
+void colorWipe(int r, int g, int b) {
+  for(int i; i < strip.numPixels(); i++){
+    actualColor[i][0] = adaptColor(actualColor[i][0], r);
+    actualColor[i][1] = adaptColor(actualColor[i][1], g);
+    actualColor[i][2] = adaptColor(actualColor[i][2], b);
+  
+    strip.setPixelColor(i,  actualColor[i][0], actualColor[i][1], actualColor[i][2]);
     strip.show();
-    delay(25);
-  }    
-  else{
-    colorWipe_i = 0;
+  }
+}
+
+int adaptColor(int from, int to) {
+  if(from == to) {
+    return from;
+  } else if(from < to) {
+    return from + 1;
+  } else if(from > to) {
+    return from - 1;
   }
 }
 
@@ -147,7 +163,7 @@ void colorWipe(uint32_t c) {
 void rainbowCycle() {
   if(rainbowCycle_j < 256) {
     for(int rainbowCycle_i = 0; rainbowCycle_i < strip.numPixels(); rainbowCycle_i++) {
-      strip.setPixelColor(rainbowCycle_i, Wheel(((rainbowCycle_i * 256 / strip.numPixels()) + rainbowCycle_j) & 255));
+      strip.setPixelColor(rainbowCycle_i, Wheel(((rainbowCycle_i * 256 / strip.numPixels()) + rainbowCycle_j) & 255, rainbowCycle_i));
     }
     rainbowCycle_j++;
 
@@ -162,7 +178,7 @@ void rainbowCycle() {
 void rainbowCycle_2() {
   if(rainbowCycle_j2 < 256) {
     for(int rainbowCycle_i = 0; rainbowCycle_i < strip.numPixels(); rainbowCycle_i++) {
-      strip.setPixelColor(rainbowCycle_i, Wheel(rainbowCycle_j2));
+      strip.setPixelColor(rainbowCycle_i, Wheel(rainbowCycle_j2, rainbowCycle_i));
     }
     rainbowCycle_j2++;
 
@@ -171,6 +187,41 @@ void rainbowCycle_2() {
   } else{
     rainbowCycle_j2 = 0;
   }
+}
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos, int index) {
+  WheelPos = 255 - WheelPos;
+  int r;
+  int g;
+  int b;
+  
+  if (WheelPos < 85) {
+    r = 255 - WheelPos * 3;
+    g = 0;
+    b =  WheelPos * 3;
+  }else if (WheelPos < 170) {
+    WheelPos -= 85;
+    
+    r = 0;
+    g = WheelPos * 3;
+    b = 255 - WheelPos * 3;
+  }else {
+    WheelPos -= 170;
+    
+    r = WheelPos * 3;
+    g = 255 - WheelPos * 3;
+    b = 0;
+  }
+
+  if (index != -1) {
+    actualColor[index][0] = r;
+    actualColor[index][1] = g;
+    actualColor[index][2] = b;  
+  }
+    
+  return strip.Color(r, g, b);
 }
 
 //Theatre-style crawling lights.
@@ -194,30 +245,21 @@ void theaterChase(uint32_t c) {
 //Theatre-style crawling lights with rainbow effect
 void theaterChaseRainbow() {
   if(theaterChaseRainbow_j < 256) {
-    theaterChase(Wheel(theaterChaseRainbow_j));
+    theaterChase(Wheel(theaterChaseRainbow_j, -1));
     theaterChaseRainbow_j++;
-  }
- else{
-  theaterChaseRainbow_j = 0;
+  } else{
+    theaterChaseRainbow_j = 0;
  }
 }
 
-// Input a value 0 to 255 to get a color value.
-// The colours are a transition r - g - b - back to r.
-uint32_t Wheel(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if (WheelPos < 85) {
-    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+void resetMemorizedColor() {
+  for(int i; i < strip.numPixels(); i++){
+    actualColor[i][0] = 0;
+    actualColor[i][1] = 0;
+    actualColor[i][2] = 0;  
   }
-  if (WheelPos < 170) {
-    WheelPos -= 85;
-    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
-
-
+  
 void serialEvent() {
   while (Serial.available()) {
     // get the new byte:
