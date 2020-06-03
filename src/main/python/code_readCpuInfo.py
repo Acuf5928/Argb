@@ -1,5 +1,3 @@
-import time
-
 import clr
 
 # List for hardware types and sensor types that our DLL can open
@@ -8,11 +6,12 @@ OHM_sensortypes = ['Voltage', 'Clock', 'Temperature', 'Load', 'Fan', 'Flow', 'Co
 
 
 class cpuInfo():
-    def __init__(self):
-        self.hw = self.init_OHM()
+    def __init__(self, pathDll):
+        if pathDll is not None:
+            self.hw = self.init_OHM(pathDll)
 
-    def init_OHM(self):
-        clr.AddReference("C:\\Vari\\argb\\src\\main\\resources\\base\\dll\\OpenHardwareMonitorLib.dll")
+    def init_OHM(self, pathDll):
+        clr.AddReference(pathDll)
         from OpenHardwareMonitor import Hardware
         hw = Hardware.Computer()
         hw.MainboardEnabled, hw.CPUEnabled, hw.RAMEnabled, hw.GPUEnabled, hw.HDDEnabled = False, True, False, False, False

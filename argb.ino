@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include <ArduinoJson.h>
 
 #define PIXEL_PIN    6    // Digital IO pin connected to the NeoPixels.
 #define PIXEL_COUNT 18
@@ -29,7 +30,8 @@ int min_temp_act, max_temp_act;
 
 String inputString = "";       // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
-
+StaticJsonDocument<200> parsedString;
+  
 boolean status_led = false;
 
 int actualColor[PIXEL_COUNT][3];
@@ -64,8 +66,10 @@ void loop()
   }
   
   if (stringComplete) {
-    int temp = inputString.toInt();
-    
+    deserializeJson(parsedString, stringComplete);
+    String case2 = parsedString["case"];
+    Serial.println(case2);
+    int temp = 0;
     if (temp == 4) {
           status_led = false;
     } else if(temp >= cpu_temp_fun_num and temp < min_temp_act){
