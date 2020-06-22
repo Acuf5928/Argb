@@ -1,6 +1,6 @@
 {
     "app_name": "argb",
-    "author": "acuf5928",
+    "author": "Acuf5928",
     "main_module": "src/main/python/code_main.pyw",
-    "version": "0.0.0"
+    "version": "1.0.0"
 }
