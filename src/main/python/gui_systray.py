@@ -15,67 +15,62 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         super(SystemTrayIcon, self).__init__()
         self.ctx = ctx
         self.menu = QtWidgets.QMenu()
-        self.activated.connect(self.setMenu)
+        #self.activated.connect(self.setMenu)
         self.setIcon(QtGui.QIcon(self.ctx.icon()))
         self.setMenu()
 
     # Init sysTray
     def setMenu(self):
-        self.menu.clear()
+        self.monoColor = QtWidgets.QMenu()
+        self.monoColor.setTitle("Mono color")
 
-        self.menu.addSeparator()
-
-        self.stat1 = self.menu.addAction("Mono color")
-        self.stat1.setEnabled(False)
-
-        self.menu.addSeparator()
-
-        self.red1 = self.menu.addAction("RED")
+        self.red1 = self.monoColor.addAction("RED")
         self.red1.triggered.connect(self.setRED1)
 
-        self.blue1 = self.menu.addAction("BLUE")
+        self.blue1 = self.monoColor.addAction("BLUE")
         self.blue1.triggered.connect(self.setBLUE1)
 
-        self.green1 = self.menu.addAction("GREEN")
+        self.green1 = self.monoColor.addAction("GREEN")
         self.green1.triggered.connect(self.setGREEN1)
 
-        self.white1 = self.menu.addAction("WHITE")
+        self.white1 = self.monoColor.addAction("WHITE")
         self.white1.triggered.connect(self.setWHITE1)
 
-        self.menu.addSeparator()
+        self.cpu = self.monoColor.addAction("Based on CPU Load")
+        self.cpu.triggered.connect(self.setCPU)
 
-        self.stat2 = self.menu.addAction("theaterChase")
-        self.stat2.setEnabled(False)
 
-        self.menu.addSeparator()
+        self.theaterChase = QtWidgets.QMenu()
+        self.theaterChase.setTitle("Theater Chase")
 
-        self.red2 = self.menu.addAction("RED")
+        self.red2 = self.theaterChase.addAction("RED")
         self.red2.triggered.connect(self.setRED2)
 
-        self.blue2 = self.menu.addAction("BLUE")
+        self.blue2 = self.theaterChase.addAction("BLUE")
         self.blue2.triggered.connect(self.setBLUE2)
 
-        self.green2 = self.menu.addAction("GREEN")
+        self.green2 = self.theaterChase.addAction("GREEN")
         self.green2.triggered.connect(self.setGREEN2)
 
-        self.white2 = self.menu.addAction("WHITE")
+        self.white2 = self.theaterChase.addAction("WHITE")
         self.white2.triggered.connect(self.setWHITE2)
 
-        self.menu.addSeparator()
 
-        self.rainbow1 = self.menu.addAction("RAINBOW")
+        self.rainbowMenu = QtWidgets.QMenu()
+        self.rainbowMenu.setTitle("RAINBOW")
+
+        self.rainbow1 = self.rainbowMenu.addAction("RAINBOW")
         self.rainbow1.triggered.connect(self.setRAINBOW)
 
-        self.rainbow2 = self.menu.addAction("RAINBOW V2")
+        self.rainbow2 = self.rainbowMenu.addAction("RAINBOW V2")
         self.rainbow2.triggered.connect(self.setRAINBOW2)
 
-        self.theaterChaseRainbow = self.menu.addAction("THEATERCHASERAINBOW")
+        self.theaterChaseRainbow = self.rainbowMenu.addAction("THEATERCHASERAINBOW")
         self.theaterChaseRainbow.triggered.connect(self.setTHEATERCHASERAINBOW)
 
-        self.menu.addSeparator()
-
-        self.cpu = self.menu.addAction("Based on CPU Load")
-        self.cpu.triggered.connect(self.setCPU)
+        self.menu.addMenu(self.monoColor)
+        self.menu.addMenu(self.theaterChase)
+        self.menu.addMenu(self.rainbowMenu)
 
         self.menu.addSeparator()
 

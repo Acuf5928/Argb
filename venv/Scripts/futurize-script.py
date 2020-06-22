@@ -1,4 +1,4 @@
-#!C:\Vari\argb\venv\Scripts\python.exe
+#!C:\Users\alber\Desktop\ESCLUDE\argb\venv\Scripts\python.exe
 # EASY-INSTALL-ENTRY-SCRIPT: 'future==0.18.2','console_scripts','futurize'
 __requires__ = 'future==0.18.2'
 import re

@@ -1,4 +1,4 @@
-#!C:\Vari\argb\venv\Scripts\python.exe
+#!C:\Users\alber\Desktop\ESCLUDE\argb\venv\Scripts\python.exe
 #
 # Very simple serial terminal
 #
