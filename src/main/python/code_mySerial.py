@@ -18,7 +18,7 @@ class MySerial:
     def checkSerial(self):
         if self.s is None:
             try:
-                self.s = serial.Serial(port=self.ctx.port, baudrate=115200, timeout=.1)
+                self.s = serial.Serial(port=self.ctx.port, baudrate=9600, timeout=.1)
             except Exception:
                 self.s = None
 

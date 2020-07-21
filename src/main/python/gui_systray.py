@@ -89,55 +89,55 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
     # Set functions of all menu elements, from here:
     def setRED1(self):
-        self.ctx.setEffect(1)
-        self.ctx.serial().write(1)
+        self.ctx.setEffect(10255000000)
+        self.ctx.serial().write(10255000000)
 
     def setBLUE1(self):
-        self.ctx.setEffect(3)
-        self.ctx.serial().write(3)
+        self.ctx.setEffect(10000000255)
+        self.ctx.serial().write(10000000255)
 
     def setGREEN1(self):
-        self.ctx.setEffect(2)
-        self.ctx.serial().write(2)
+        self.ctx.setEffect(10000255000)
+        self.ctx.serial().write(10000255000)
 
     def setWHITE1(self):
-        self.ctx.setEffect(5)
-        self.ctx.serial().write(5)
+        self.ctx.setEffect(10255255255)
+        self.ctx.serial().write(10255255255)
 
     def setRED2(self):
-        self.ctx.setEffect(6)
-        self.ctx.serial().write(6)
+        self.ctx.setEffect(11255000000)
+        self.ctx.serial().write(11255000000)
 
     def setBLUE2(self):
-        self.ctx.setEffect(8)
-        self.ctx.serial().write(8)
+        self.ctx.setEffect(11000000255)
+        self.ctx.serial().write(11000000255)
 
     def setGREEN2(self):
-        self.ctx.setEffect(7)
-        self.ctx.serial().write(7)
+        self.ctx.setEffect(11000255000)
+        self.ctx.serial().write(11000255000)
 
     def setWHITE2(self):
-        self.ctx.setEffect(9)
-        self.ctx.serial().write(9)
+        self.ctx.setEffect(11255255255)
+        self.ctx.serial().write(11255255255)
 
     def setOFF(self):
-        self.ctx.setEffect(4)
-        self.ctx.serial().write(4)
+        self.ctx.setEffect(0)
+        self.ctx.serial().write(0)
 
     def setRAINBOW(self):
-        self.ctx.setEffect(10)
-        self.ctx.serial().write(10)
+        self.ctx.setEffect(130)
+        self.ctx.serial().write(130)
 
     def setRAINBOW2(self):
-        self.ctx.setEffect(11)
-        self.ctx.serial().write(11)
+        self.ctx.setEffect(131)
+        self.ctx.serial().write(131)
 
     def setTHEATERCHASERAINBOW(self):
-        self.ctx.setEffect(12)
-        self.ctx.serial().write(12)
+        self.ctx.setEffect(132)
+        self.ctx.serial().write(132)
 
     def setCPU(self):
-        self.ctx.setEffect(13)
+        self.ctx.setEffect(12)
         _thread.start_new_thread(readCPUInfo, (self.ctx, ))
 
     def openWindows(self):
