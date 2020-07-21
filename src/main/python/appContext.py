@@ -23,7 +23,7 @@ class AppContext(ApplicationContext):
 
     def initLed(self):
         time.sleep(3)
-        if self.effect is not 13:
+        if self.effect is not 12:
             self.serial().write(self.effect)
         else:
             _thread.start_new_thread(readCPUInfo, (self,))
@@ -82,6 +82,6 @@ class AppContext(ApplicationContext):
 def readCPUInfo(ctx):
     reader = cpuInfo(ctx.get_resource("dll\\OpenHardwareMonitorLib.dll"))
     while True:
-        ctx.serial().write(int(reader.fetch_data()[0]["Reading"]) + 1300)
+        ctx.serial().write(int(reader.fetch_data()[0]["Reading"]) + 12000)
         time.sleep(2)
-        if ctx.effect is not 13: break
+        if ctx.effect is not 12: break

@@ -1,11 +1,7 @@
 #include <Adafruit_NeoPixel.h>
-#include <ArduinoJson.h>
 
 #define PIXEL_PIN    6    // Digital IO pin connected to the NeoPixels.
 #define PIXEL_COUNT 18
-
-#define TEMP_MIN 0
-#define TEMP_MAX 95
 
 #define BUTTON_PIN 4
 
@@ -18,125 +14,75 @@
 //   NEO_KHZ800  800 KHz bitstream (e.g. High Density LED strip), correct for neopixel stick
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
-byte Mod;
-
 uint16_t rainbowCycle_j, rainbowCycle_j2;
-int theaterChase_i;
-int theaterChaseRainbow_j;
+uint16_t theaterChase_i;
+uint16_t theaterChaseRainbow_j;
 
-int cpu_temp;
-int cpu_temp_fun_num = 1300;
-int min_temp_act, max_temp_act;
-
-String inputString = "";       // a String to hold incoming data
-bool stringComplete = false;  // whether the string is complete
-StaticJsonDocument<200> parsedString;
-  
-boolean status_led = false;
-
-int actualColor[PIXEL_COUNT][3];
+String inputString;       // a String to hold incoming data
+bool stringComplete;  // whether the string is complete
+bool status_led;
 
 void setup() {
-  Mod = 10;
-  min_temp_act = cpu_temp_fun_num + TEMP_MIN;
-  max_temp_act = cpu_temp_fun_num + TEMP_MAX;
+  inputString = 130;
+  stringComplete = true;
+  status_led = true;
   
-  //Serial
-  Serial.begin(115200);
-  inputString.reserve(200);
-
-  for(int i=0; i<PIXEL_COUNT; i++){
-    for(int i2=0; i2<3; i2++){
-      actualColor[i][i2];
-    }
-  }
+  Serial.begin(9600);
   
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 }
 
-void loop()
-{  
+void loop() {  
   if (digitalRead(BUTTON_PIN) == HIGH) {
-      status_led =! status_led;
-
-    while (digitalRead(BUTTON_PIN) == HIGH) { 
-      delay(200);  
-    }
-  }
-  
-  if (stringComplete) {
-    deserializeJson(parsedString, stringComplete);
-    String case2 = parsedString["case"];
-    Serial.println(case2);
-    int temp = 0;
-    if (temp == 4) {
-          status_led = false;
-    } else if(temp >= cpu_temp_fun_num and temp < min_temp_act){
-          status_led = true;
-          Mod = 8;
-    } else if(temp >= min_temp_act and temp <= max_temp_act){
-          status_led = true;
-          cpu_temp = temp - 1300;
-          Mod = 13;
-    } else if(temp > max_temp_act){
-          status_led = true;
-          Mod = 6;
-    } else {
-          status_led = true;
-          Mod = temp;  
+    if (inputString[0] == '0') {
+      inputString[0] = '1';
+    } else if (inputString[0] == '1') {
+      inputString[0] = '0';
     }
     
-    // clear the string:
-    inputString = "";
-    stringComplete = false;
+    while (digitalRead(BUTTON_PIN) == HIGH) { 
+      delay(200);
+     
+    }
   }
-  startShow();
-}
 
-void startShow() {
-  if (status_led == false) {
-       colorWipe(0, 0, 0); 
-  } else {
-    switch (Mod) {
-      case 1: colorWipe(255, 0, 0);  // Red
-        break;
-      case 2: colorWipe(0, 255, 0);  // Green
-        break;
-      case 3: colorWipe(0, 0, 255);  // Blue
-        break;
-      case 5: colorWipe(255, 255, 255);    // White
-        break;
-      case 6: resetMemorizedColor();
-        theaterChase(strip.Color(255, 0, 0));  // Red
-        break;
-      case 7: resetMemorizedColor();
-        theaterChase(strip.Color(0, 255, 0));  // Green
-        break;
-      case 8: resetMemorizedColor();
-        theaterChase(strip.Color(0, 0, 255));  // Blue
-        break;
-      case 9: resetMemorizedColor();
-        theaterChase(strip.Color(255, 255, 255));    // White
-        break;
-      case 10: rainbowCycle();
-        break;
-      case 11: rainbowCycle_2();
-        break;
-      case 12: resetMemorizedColor();
-        theaterChaseRainbow();
-        break;
-      case 13: cpu_temp_fun();
-        break;
-    } 
+  if (stringComplete) {
+    if (inputString[0] == '0') {
+      colorWipe(0,0,0);
+      inputString[0] = '0';
+      
+    } else if(inputString[0] == '1'){
+      if(inputString[1] == '0'){
+        colorWipe(inputString.substring(2,5).toInt(), inputString.substring(5,8).toInt(), inputString.substring(8,11).toInt());
+        
+      } else if(inputString[1] == '1'){
+        theaterChase(strip.Color(inputString.substring(2,5).toInt(), inputString.substring(5,8).toInt(), inputString.substring(8,11).toInt()));
+        
+      } else if(inputString[1] == '2'){
+        cpuBasedColor(inputString.substring(2,5).toInt());
+        
+      } else if(inputString[1] == '3'){
+        if(inputString[2] == '0'){
+          rainbowCycle();
+          
+        } else if(inputString[2] == '1'){
+          rainbowCycle_2();
+          
+        } else if(inputString[2] == '2'){
+          theaterChaseRainbow();
+          
+        }
+      }
+    }
   }
 }
 
-void cpu_temp_fun(){
+void cpuBasedColor(byte load){
   byte r, g, b;
 
   r = 255;
-  g = b = 255 - map(cpu_temp, TEMP_MIN, TEMP_MAX, 0, 255);
+  g = b = 255 - map(load, 0, 100, 0, 255);
 
   colorWipe(r, g, b);
 }
@@ -144,22 +90,8 @@ void cpu_temp_fun(){
 // Fill the dots one after the other with a color
 void colorWipe(int r, int g, int b) {
   for(int i; i < strip.numPixels(); i++){
-    actualColor[i][0] = adaptColor(actualColor[i][0], r);
-    actualColor[i][1] = adaptColor(actualColor[i][1], g);
-    actualColor[i][2] = adaptColor(actualColor[i][2], b);
-  
-    strip.setPixelColor(i,  actualColor[i][0], actualColor[i][1], actualColor[i][2]);
+    strip.setPixelColor(i, r, g, b);
     strip.show();
-  }
-}
-
-int adaptColor(int from, int to) {
-  if(from == to) {
-    return from;
-  } else if(from < to) {
-    return from + 1;
-  } else if(from > to) {
-    return from - 1;
   }
 }
 
@@ -197,9 +129,7 @@ void rainbowCycle_2() {
 // The colours are a transition r - g - b - back to r.
 uint32_t Wheel(byte WheelPos, int index) {
   WheelPos = 255 - WheelPos;
-  int r;
-  int g;
-  int b;
+  byte r, g, b;
   
   if (WheelPos < 85) {
     r = 255 - WheelPos * 3;
@@ -217,12 +147,6 @@ uint32_t Wheel(byte WheelPos, int index) {
     r = WheelPos * 3;
     g = 255 - WheelPos * 3;
     b = 0;
-  }
-
-  if (index != -1) {
-    actualColor[index][0] = r;
-    actualColor[index][1] = g;
-    actualColor[index][2] = b;  
   }
     
   return strip.Color(r, g, b);
@@ -255,26 +179,20 @@ void theaterChaseRainbow() {
     theaterChaseRainbow_j = 0;
  }
 }
-
-void resetMemorizedColor() {
-  for(int i; i < strip.numPixels(); i++){
-    actualColor[i][0] = 0;
-    actualColor[i][1] = 0;
-    actualColor[i][2] = 0;  
-  }
-}
   
 void serialEvent() {
+  if (stringComplete) {
+    inputString = "";
+    stringComplete = false;
+  }
+  
   while (Serial.available()) {
-    // get the new byte:
     char inChar = (char)Serial.read();
-    // add it to the inputString:
-    inputString += inChar;
-    // if the incoming character is a newline, set a flag so the main loop can
-    // do something about it:
-
+    
     if (inChar == '\n') {
       stringComplete = true;
+    } else {
+      inputString += inChar;
     }
   }
 }
