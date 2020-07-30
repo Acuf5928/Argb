@@ -6,8 +6,11 @@ import PyQt5.QtWidgets as QtWidgets
 import sys
 
 import gui_settings
+import gui_colorPicker
+from PyQt5.QtCore import pyqtSlot
 
 from appContext import readCPUInfo
+
 
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
@@ -36,6 +39,9 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.white1 = self.monoColor.addAction("WHITE")
         self.white1.triggered.connect(self.setWHITE1)
 
+        self.setColor1 = self.monoColor.addAction("Set color from palette")
+        self.setColor1.triggered.connect(self.setColorFromPalette1)
+
         self.cpu = self.monoColor.addAction("Based on CPU Load")
         self.cpu.triggered.connect(self.setCPU)
 
@@ -55,6 +61,8 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.white2 = self.theaterChase.addAction("WHITE")
         self.white2.triggered.connect(self.setWHITE2)
 
+        self.setColor2 = self.theaterChase.addAction("Set color from palette")
+        self.setColor2.triggered.connect(self.setColorFromPalette2)
 
         self.rainbowMenu = QtWidgets.QMenu()
         self.rainbowMenu.setTitle("RAINBOW")
@@ -139,6 +147,16 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def setCPU(self):
         self.ctx.setEffect(12)
         _thread.start_new_thread(readCPUInfo, (self.ctx, ))
+
+    @pyqtSlot()
+    def setColorFromPalette1(self):
+        self.window = gui_colorPicker.App(self.ctx, "10")
+        self.window.show()
+
+    @pyqtSlot()
+    def setColorFromPalette2(self):
+        self.window = gui_colorPicker.App(self.ctx, "11")
+        self.window.show()
 
     def openWindows(self):
         self.window = gui_settings.App(self.ctx)
