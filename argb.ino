@@ -22,6 +22,9 @@ String inputString;       // a String to hold incoming data
 bool stringComplete;  // whether the string is complete
 bool status_led;
 
+bool button_previus_pressed = false;
+int new_input = 0;
+
 void setup() {
   inputString = 130;
   stringComplete = true;
@@ -35,16 +38,19 @@ void setup() {
 
 void loop() {  
   if (digitalRead(BUTTON_PIN) == HIGH) {
-    if (inputString[0] == '0') {
-      inputString[0] = '1';
-    } else if (inputString[0] == '1') {
-      inputString[0] = '0';
+    if (button_previus_pressed == false) {
+      if (inputString[0] == '0') {
+        new_input = '1';
+      } else if (inputString[0] == '1') {
+        new_input = '0';
+      }
+      button_previus_pressed = true;
     }
-    
-    while (digitalRead(BUTTON_PIN) == HIGH) { 
-      delay(200);
-     
-    }
+  } else { 
+      if (button_previus_pressed == true) {
+        inputString[0] = new_input;
+        button_previus_pressed = false;
+      }
   }
 
   if (stringComplete) {
