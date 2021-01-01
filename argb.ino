@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include <EEPROM.h>
 
 #define PIXEL_PIN    6    // Digital IO pin connected to the NeoPixels.
 #define PIXEL_COUNT 18
@@ -19,15 +20,14 @@ uint16_t theaterChase_i;
 uint16_t theaterChaseRainbow_j;
 
 String inputString;       // a String to hold incoming data
-bool stringComplete;  // whether the string is complete
+String newString;
+bool stringComplete = false;  // whether the string is complete
 bool status_led;
 
 bool button_previus_pressed = false;
-int new_input = 0;
 
 void setup() {
-  inputString = 130;
-  stringComplete = true;
+  inputString = readStringFromEEPROM();
   status_led = true;
   
   Serial.begin(9600);
@@ -39,49 +39,57 @@ void setup() {
 void loop() {  
   if (digitalRead(BUTTON_PIN) == HIGH) {
     if (button_previus_pressed == false) {
-      if (inputString[0] == '0') {
-        new_input = '1';
-      } else if (inputString[0] == '1') {
-        new_input = '0';
-      }
-      button_previus_pressed = true;
+        button_previus_pressed = true;
     }
   } else { 
       if (button_previus_pressed == true) {
-        inputString[0] = new_input;
+        status_led =! status_led;
         button_previus_pressed = false;
       }
   }
 
   if (stringComplete) {
-    if (inputString[0] == '0') {
-      colorWipe(0,0,0);
-      inputString[0] = '0';
-      
-    } else if(inputString[0] == '1'){
-      if(inputString[1] == '0'){
-        colorWipe(inputString.substring(2,5).toInt(), inputString.substring(5,8).toInt(), inputString.substring(8,11).toInt());
-        
-      } else if(inputString[1] == '1'){
-        theaterChase(strip.Color(inputString.substring(2,5).toInt(), inputString.substring(5,8).toInt(), inputString.substring(8,11).toInt()));
-        
-      } else if(inputString[1] == '2'){
-        cpuBasedColor(inputString.substring(2,5).toInt());
-        
-      } else if(inputString[1] == '3'){
-        if(inputString[2] == '0'){
-          rainbowCycle();
+    if (newString[0] == '0') {
+        status_led = false;
+    } else {
+        status_led = true;
+        if (inputString != newString) {
+          inputString = newString;
+          writeStringToEEPROM(newString);
+        }
+    }
+
+    newString = "";
+    stringComplete = false;
+  }
+  
+    if (status_led) {
+      if(inputString[0] == '1'){
+        if(inputString[1] == '0'){
+          colorWipe(inputString.substring(2,5).toInt(), inputString.substring(5,8).toInt(), inputString.substring(8,11).toInt());
           
-        } else if(inputString[2] == '1'){
-          rainbowCycle_2();
+        } else if(inputString[1] == '1'){
+          theaterChase(strip.Color(inputString.substring(2,5).toInt(), inputString.substring(5,8).toInt(), inputString.substring(8,11).toInt()));
           
-        } else if(inputString[2] == '2'){
-          theaterChaseRainbow();
+        } else if(inputString[1] == '2'){
+          cpuBasedColor(inputString.substring(2,5).toInt());
           
+        } else if(inputString[1] == '3'){
+          if(inputString[2] == '0'){
+            rainbowCycle();
+            
+          } else if(inputString[2] == '1'){
+            rainbowCycle_2();
+            
+          } else if(inputString[2] == '2'){
+            theaterChaseRainbow();
+            
+          }
         }
       }
+    } else {
+        colorWipe(0,0,0);
     }
-  }
 }
 
 void cpuBasedColor(byte load){
@@ -185,20 +193,34 @@ void theaterChaseRainbow() {
     theaterChaseRainbow_j = 0;
  }
 }
-  
-void serialEvent() {
-  if (stringComplete) {
-    inputString = "";
-    stringComplete = false;
+
+void writeStringToEEPROM(const String &strToWrite) {
+  byte len = strToWrite.length();
+  EEPROM.write(0, len);
+  for (int i = 0; i < len; i++)
+  {
+    EEPROM.write(i + 1, strToWrite[i]);
   }
+}
+
+String readStringFromEEPROM() {
+  int newStrLen = EEPROM.read(0);
+  char data[newStrLen + 1];
+  for (int i = 0; i < newStrLen; i++)
+  {
+    data[i] = EEPROM.read(i + 1);
+  }
+  return String(data);
+}
   
+void serialEvent() {  
   while (Serial.available()) {
     char inChar = (char)Serial.read();
     
     if (inChar == '\n') {
       stringComplete = true;
     } else {
-      inputString += inChar;
+      newString += inChar;
     }
   }
 }
